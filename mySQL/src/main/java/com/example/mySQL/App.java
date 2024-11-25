@@ -11,9 +11,27 @@ public class App {
 		} catch (SQLException e) {
 			System.out.println("Cannot connect to the Database");
 		}
-		
+
 		System.out.println("Connected");
+
+		UserDao userDao = new UserDaoImpl();
+		// userDao.save(new User("Mars"));
+		// userDao.save(new User("Mercury"));
 		
+		//userDao.delete(new User("Alice", 1));
+		userDao.update(new User("Neptune", 5));
+
+		var users = userDao.getAll();
+		users.forEach(System.out::println);
+
+		var user = userDao.findByID(3);
+
+		if (user.isPresent()) {
+			System.out.println("Retrieved User: " + user.get().getName());
+		} else {
+			System.out.println("No such user");
+		}
+
 		try {
 			db.close();
 		} catch (SQLException e) {
