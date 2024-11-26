@@ -1,13 +1,17 @@
 package com.example.mySQL;
 
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class App {
 	public static void main(String[] args) {
-
+		
+		var props = Profile.getProperties("db");
+		
 		var db = Database.getInstance();
+		
 		try {
-			db.connect();
+			db.connect(props);
 		} catch (SQLException e) {
 			System.out.println("Cannot connect to the Database");
 		}
