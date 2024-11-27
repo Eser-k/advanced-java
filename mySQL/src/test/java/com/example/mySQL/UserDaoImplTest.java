@@ -91,5 +91,55 @@ public class UserDaoImplTest {
 		stmt.close();
 
 	}
+	
+	@Test
+	public void testFind() throws SQLException {
+		
+		var user = users.get(0);
+		UserDao userDao = new UserDaoImpl();
+		
+		userDao.save(user);
+		
+		int maxId = getMaxId();
+		
+		var foundUser = userDao.findByID(maxId);
+		
+		if(foundUser.isPresent()) {
+			assertEquals(foundUser.get().getId(), maxId, "max Id and found Id does not match");
+		}
+		else {
+			throw new RuntimeException();
+		}
+		
+	}
+	
+	@Test
+	public void testUpdate() throws SQLException {
+		
+		var user = users.get(0);
+		UserDao userDao = new UserDaoImpl();
+		
+		userDao.save(user);
+		
+		int maxId = getMaxId();
+		
+		userDao.update(new User("Tino", maxId));
+		
+		var updatedUser = userDao.findByID(maxId);
+		
+		assertNotEquals(user.getName(), updatedUser);
+		
+	}
+	
+	public int getMaxId() throws SQLException {
+		var stmt = conn.createStatement();
+		var rs = stmt.executeQuery("SELECT MAX(id) AS max_id FROM user");
+		
+		if (rs.next()) { 
+	        return rs.getInt("max_id"); 
+	    } else {
+	        throw new SQLException("No rows found in user table");
+	    }
+	}
 
 }
