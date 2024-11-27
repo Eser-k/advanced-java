@@ -63,9 +63,6 @@ public class UserDaoImplTest {
 
 		while (rs.next()) {
 			rowCount++;
-			var name = rs.getString("name");
-			var id = rs.getInt("id");
-			System.out.println(name + "," + id);
 		}
 
 		assertEquals(users.size(), rowCount, "Size of users and size of database mismatch");
@@ -91,55 +88,96 @@ public class UserDaoImplTest {
 		stmt.close();
 
 	}
-	
+
 	@Test
 	public void testFind() throws SQLException {
-		
+
 		var user = users.get(0);
 		UserDao userDao = new UserDaoImpl();
-		
+
 		userDao.save(user);
-		
+
 		int maxId = getMaxId();
-		
+
 		var foundUser = userDao.findByID(maxId);
-		
-		if(foundUser.isPresent()) {
+
+		if (foundUser.isPresent()) {
 			assertEquals(foundUser.get().getId(), maxId, "max Id and found Id does not match");
-		}
-		else {
+		} else {
 			throw new RuntimeException();
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testUpdate() throws SQLException {
-		
+
 		var user = users.get(0);
 		UserDao userDao = new UserDaoImpl();
-		
+
 		userDao.save(user);
-		
+
 		int maxId = getMaxId();
-		
+
 		userDao.update(new User("Tino", maxId));
-		
+
 		var updatedUser = userDao.findByID(maxId);
-		
+
 		assertNotEquals(user.getName(), updatedUser);
-		
+
 	}
-	
+
 	public int getMaxId() throws SQLException {
 		var stmt = conn.createStatement();
 		var rs = stmt.executeQuery("SELECT MAX(id) AS max_id FROM user");
+
+		if (rs.next()) {
+			return rs.getInt("max_id");
+		} else {
+			throw new SQLException("No rows found in user table");
+		}
+	}
+
+	@Test
+	public void testGetAll() throws SQLException {
+
+		UserDao userDao = new UserDaoImpl();
+
+		for (var u : users) {
+			userDao.save(u);
+		}
+
+		var usersByGetAll = userDao.getAll();
+
+		assertEquals(users.size(), usersByGetAll.size(), "Size of users and size of database mismatch");
+
+	}
+	
+	@Test
+	public void testDelete() throws SQLException{
 		
-		if (rs.next()) { 
-	        return rs.getInt("max_id"); 
-	    } else {
-	        throw new SQLException("No rows found in user table");
-	    }
+		UserDao userDao = new UserDaoImpl();
+
+		for (var u : users) {
+			userDao.save(u);
+		}
+		
+		int maxId = getMaxId();
+		userDao.delete(new User("", maxId));
+		
+		var stmt = conn.createStatement();
+
+		var rs = stmt.executeQuery("SELECT * FROM user");
+
+		int rowCount = 0;
+
+		while (rs.next()) {
+			rowCount++;
+		}
+		
+		assertNotEquals(users.size(), rowCount);
+		
+		
 	}
 
 }
