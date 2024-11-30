@@ -1,8 +1,9 @@
 package testApp3;
 
+@Entity()
 public class User {
 	
-	@Field(value = "id", isKey = true)
+	@Field(columnName = "id", isKey = true)
 	private Long id;
 	
 	@Field()

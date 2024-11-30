@@ -6,29 +6,45 @@ import java.util.stream.Collectors;
 public class Repository<T> {
 	public void save(T t) {
 		var clazz = t.getClass();
+		var classAnnotations = clazz.getAnnotationsByType(Entity.class);
 		
-		var fields = clazz.getDeclaredFields();
+		var tableName = clazz.getSimpleName().toLowerCase();
 		
-		for(var field : fields) {
+		if (classAnnotations.length > 0) {
+			var tableNameAttribute = classAnnotations[0].value();
 			
-			var annotations = field.getAnnotationsByType(Field.class);
-			if(annotations.length == 0) {
-				continue;
+			if(tableNameAttribute.length() > 0) {
+				tableName = tableNameAttribute;
 			}
 			
-			var fieldName = annotations[0].value();
-			var isKey = annotations[0].isKey();
-			
-			System.out.println("fieldName: " + fieldName + ", " + "isKey: " + isKey);
 		}
 		
+		var fields = clazz.getDeclaredFields();
+
+		for (var field : fields) {
+
+			var annotations = field.getAnnotationsByType(Field.class);
+			
+			if (annotations.length == 0) {
+				continue;
+			}
+
+			var columnName = annotations[0].columnName();
+			var isKey = annotations[0].isKey();
+
+			if (columnName.length() == 0) {
+				columnName = field.getName();
+			}
+
+			System.out.println("Table Name: " + tableName + ", " + "columnName: " + columnName + ", " + "isKey: " + isKey);
+		}
+
 		/*
-		var fieldList = Arrays
-			.stream(fields)
-			.filter(f -> f.getAnnotationsByType(Field.class).length > 0)
-			.collect(Collectors.toList());
-		
-		System.out.println(fieldList);
-		*/
+		 * var fieldList = Arrays .stream(fields) .filter(f ->
+		 * f.getAnnotationsByType(Field.class).length > 0)
+		 * .collect(Collectors.toList());
+		 * 
+		 * System.out.println(fieldList);
+		 */
 	}
 }
