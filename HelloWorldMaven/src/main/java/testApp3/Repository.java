@@ -1,5 +1,6 @@
 package testApp3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ public class Repository<T> {
 		
 		var fields = clazz.getDeclaredFields();
 
+		ArrayList<String> fieldList = new ArrayList<>();
+		
 		for (var field : fields) {
 
 			var annotations = field.getAnnotationsByType(Field.class);
@@ -35,10 +38,20 @@ public class Repository<T> {
 			if (columnName.length() == 0) {
 				columnName = field.getName();
 			}
+			
+			if(!isKey) {
+				fieldList.add(field.getName());
+			}
 
 			System.out.println("Table Name: " + tableName + ", " + "columnName: " + columnName + ", " + "isKey: " + isKey);
 		}
-
+		
+		String sqlFields = fieldList.stream().collect(Collectors.joining(","));
+		String sqlPlaceholders = fieldList.stream().map(s -> "?").collect(Collectors.joining(","));
+		
+		String sqlStatement = "INSERT INTO " + tableName + " (" + sqlFields + ") " + "values " + "(" + sqlPlaceholders + ");";
+		System.out.println(sqlStatement);
+		
 		/*
 		 * var fieldList = Arrays .stream(fields) .filter(f ->
 		 * f.getAnnotationsByType(Field.class).length > 0)
