@@ -4,6 +4,8 @@
 #MacOS Datei
 *.DS_Store
 
+/Servers
+
 # Log file
 *.log
 
