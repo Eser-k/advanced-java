@@ -14,7 +14,7 @@ public class MainFrame extends JFrame{
 		setJMenuBar(createMenu());
 		
 		setVisible(true);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1000, 800);
 		
 	}
