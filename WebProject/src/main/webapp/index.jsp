@@ -33,7 +33,7 @@
 
 </head>
 <body>
-	<form>
+	<form action = "http://localhost:8080/WebProject/users" method = "POST" >
 		<label for = "name"> Name:</label>
 		<input type = "text" id = "name" name = "name">
 		
